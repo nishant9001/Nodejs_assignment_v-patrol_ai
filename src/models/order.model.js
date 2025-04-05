@@ -47,8 +47,7 @@ const orderSchema = new Schema(
     status:
     {
       type:String,
-      enum:["pending","completed","cancelled"],
-      required:true
+      default:"pending",
     },
     subOrders:
     [
