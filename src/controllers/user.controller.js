@@ -2,13 +2,14 @@ import {asyncHandler} from ".././utils/asyncHandler.js";
 import {ApiResponse} from ".././utils/ApiResponse.js";
 import {ApiError} from "../utils/ApiError.js";
 import {User} from "../models/user.model.js";
+import {Product} from "../models/product.model.js";
+import {Order} from "../models/order.model.js";
 import jwt from "jsonwebtoken";
 import fs, { writeFileSync } from "fs";
 
 
 const registerUser = asyncHandler(async(req,res)=>
 {
-  
   const {email,name,password,role} = req.body;
    console.log(req.body);
   const existUser = await User.findOne(
@@ -20,7 +21,7 @@ const registerUser = asyncHandler(async(req,res)=>
   {
     throw new ApiError(409,"User with email already exists");
   }
-
+ 
   // create user object - create entry in db
   const user =await User.create(
     {
@@ -41,7 +42,7 @@ const registerUser = asyncHandler(async(req,res)=>
   {
     throw new ApiError(500,"Something went wrong while registering the user");
   }
- 
+
   // return res
   return res.status(201).json
     (
@@ -125,6 +126,36 @@ const logoutUser = asyncHandler(async(req,res)=>
   
 })
 
+// vendor api
+const getDailySales = asyncHandler(async(req,res)=>
+{
+  const user =req.user;
+   const dailysales = await Order.aggregate(
+    [
+      {
+        $match:
+       {
+         subOrders:
+         {
+           vendorId:user._id
+         }
+       }
+      },
+      {
+        $sort:{
+          createAt:-1
+        }
+      },
+      {
+        $limit:5
+      }
+    ]
+   )
+})
+//getLowStockItems, 
+//getRevenuePerVendor,
+//getTopProducts,
+//getAverageOrderValue,
 
 // const changeCurrentPassword = asyncHandler(async(req,res)=>
 // {
@@ -408,10 +439,16 @@ const logoutUser = asyncHandler(async(req,res)=>
 //   )
 // })
 
+
 export {
   registerUser,
   loginUser,
   logoutUser,
+  //getDailySales,
+  //getLowStockItems, 
+  //getRevenuePerVendor,
+  //getTopProducts,
+  //getAverageOrderValue,
   // refreshAccessToken,
   // changeCurrentPassword,
   // getCurrentUser,

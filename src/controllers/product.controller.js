@@ -7,6 +7,7 @@ import {User} from "../models/user.model.js";
 
 const addProduct = asyncHandler(async(req,res)=>
 {
+    
     const {productName,price,stock,category} = req.body;
     const user =req.user;
 
@@ -33,7 +34,6 @@ const addProduct = asyncHandler(async(req,res)=>
     return res.status(200).json(
         new ApiResponse(201,product,"product created successfully")
     )
-
 })
 
 const updateProduct = asyncHandler(async(req,res)=>
